@@ -1,5 +1,6 @@
 package com.example.restapp.GestorFinanciero.controller;
 
+
 import com.example.restapp.GestorFinanciero.models.Rol;
 import com.example.restapp.GestorFinanciero.service.IRolService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
-@CrossOrigin("*")
 @RequiredArgsConstructor
 public class RolController {
 

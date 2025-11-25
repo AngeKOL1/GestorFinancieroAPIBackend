@@ -27,13 +27,13 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
 
-    // 🔑 Genera la clave para firmar los tokens
+    //  Genera la clave para firmar los tokens
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 🔹 Genera un token con roles e ID de usuario incluidos
+    //  Genera un token con roles e ID de usuario incluidos
     public String generateToken(UserDetails userDetails, Integer idUsuario) {
         Map<String, Object> claims = new HashMap<>();
 
@@ -50,13 +50,13 @@ public class JwtTokenUtil implements Serializable {
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
-    // ⚠️ Este método sigue existiendo, pero ya no se recomienda usarlo
+    // Este método sigue existiendo, pero ya no se recomienda usarlo
     public String generateToken(UserDetails userDetails) {
         // Por compatibilidad: genera el token sin idUsuario
         return generateToken(userDetails, null);
     }
 
-    // 🔒 Construcción del token con tiempo de expiración
+    //  Construcción del token con tiempo de expiración
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         SecretKey key = getSigningKey();
         return Jwts.builder()
@@ -68,7 +68,7 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    // 🧩 Normaliza el token removiendo el prefijo Bearer si existe
+    // Normaliza el token removiendo el prefijo Bearer si existe
     private String normalizeToken(String token) {
         if (token == null) return null;
         token = token.trim();
@@ -76,7 +76,7 @@ public class JwtTokenUtil implements Serializable {
         return token;
     }
 
-    // 📜 Devuelve todos los claims del token
+    // Devuelve todos los claims del token
     public Claims getAllClaimsFromToken(String token) {
         token = normalizeToken(token);
         SecretKey key = getSigningKey();
@@ -88,7 +88,7 @@ public class JwtTokenUtil implements Serializable {
                 .getPayload();
     }
 
-    // 📦 Obtiene un claim específico
+    //  Obtiene un claim específico
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);

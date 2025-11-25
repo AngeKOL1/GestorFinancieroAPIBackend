@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class UsuarioController {
     private final IUsuarioService service;
     @GetMapping

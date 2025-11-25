@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/metas")
-@CrossOrigin("*")
 @RequiredArgsConstructor
 public class MetaController {
     private final IMetaService service;
