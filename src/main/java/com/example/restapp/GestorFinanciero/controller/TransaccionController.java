@@ -38,7 +38,7 @@ public class TransaccionController {
             return ResponseEntity.status(HttpStatus.CREATED).body(transaccion);
     }
    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarTransaccion(
+    public ResponseEntity<Transaccion> actualizarTransaccion(
             @PathVariable Integer id,
             @RequestBody EditarTransaccionDTO transaccion,
             HttpServletRequest request) throws Exception {

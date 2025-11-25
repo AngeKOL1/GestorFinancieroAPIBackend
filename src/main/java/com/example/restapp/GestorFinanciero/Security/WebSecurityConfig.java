@@ -32,33 +32,32 @@ public class WebSecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService jwtUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
+    public static final String ADMIN = "ADMIN";
+    public static final String USUARIO = "USUARIO";
+    
 
-    // 🔑 Authentication Manager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // 🔐 Password Encoder
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Configura el servicio de autenticación
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
-    // ✅ CONFIGURACIÓN GLOBAL DE CORS
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                "http://localhost:5173",  // desarrollo
-                "http://miapp-frontend-bucket.s3-website-us-east-1.amazonaws.com"  // producción
+                "http://localhost:5173",  
+                "http://miapp-frontend-bucket.s3-website-us-east-1.amazonaws.com"  
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -69,19 +68,18 @@ public class WebSecurityConfig {
     }
 
 
-    // 🔒 Filtro de seguridad principal
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {}) // ✅ activa el CORS global
+                .cors(cors -> {}) 
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/transacciones/**").hasAuthority("USUARIO")
-                        .requestMatchers(HttpMethod.POST, "/transacciones/**").hasAuthority("USUARIO")
-                        .requestMatchers(HttpMethod.POST, "/metas/*/metas/**").hasAuthority("USUARIO")
-                        .requestMatchers(HttpMethod.GET, "/metas/**").hasAuthority("USUARIO")
+                        .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority(ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/transacciones/**").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.POST, "/transacciones/**").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.POST, "/metas/*/metas/**").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.GET, "/metas/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/usuarios/registro").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/meta/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/meta/misMetas/").authenticated()

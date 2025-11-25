@@ -10,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+
+
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
@@ -28,14 +29,9 @@ public class UsuarioController {
         return ResponseEntity.ok(obj);
     }
     @PostMapping("/registro")
-    public ResponseEntity<?> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
-        try {
-            Usuario nuevo = service.registrarUsuario(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<Usuario> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
+        Usuario nuevo = service.registrarUsuario(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
+
 }
