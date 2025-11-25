@@ -20,6 +20,7 @@ public class TrofeoService extends GenericService<Trofeos, Integer> implements I
     protected IGenericRepo<Trofeos, Integer> getRepo() {
         return repo;
     }
+    //Método para asignar trofeo según XP
     @Override
     public Trofeos asignarTrofeoPorXP(Integer idUsuario) throws Exception {
 
