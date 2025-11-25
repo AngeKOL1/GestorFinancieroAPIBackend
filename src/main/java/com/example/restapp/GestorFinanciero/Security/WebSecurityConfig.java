@@ -75,15 +75,23 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/login").permitAll()
+                        
+                        .requestMatchers(HttpMethod.POST, "/usuarios/registro").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuarios/xp").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/asignarNivel").authenticated()
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority(ADMIN)
+
                         .requestMatchers(HttpMethod.GET, "/transacciones/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/transacciones/**").hasAuthority(USUARIO)
+
                         .requestMatchers(HttpMethod.POST, "/metas/*/metas/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.GET, "/metas/**").hasAuthority(USUARIO)
-                        .requestMatchers(HttpMethod.POST, "/usuarios/registro").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/meta/**").authenticated()
+
                         .requestMatchers(HttpMethod.GET, "/meta/misMetas/").authenticated()
+
                         .requestMatchers(HttpMethod.GET, "/niveles/**").authenticated()
+
                         .requestMatchers(HttpMethod.GET, "/trofeos/**").authenticated()
                         .requestMatchers("/usuarios/**").authenticated()
                         .anyRequest().authenticated()

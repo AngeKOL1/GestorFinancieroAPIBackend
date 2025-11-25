@@ -3,6 +3,8 @@ package com.example.restapp.GestorFinanciero.controller;
 import com.example.restapp.GestorFinanciero.DTO.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.models.Usuario;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,5 +34,17 @@ public class UsuarioController {
         Usuario nuevo = service.registrarUsuario(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
+    @PutMapping("/asignarNivel")
+    public ResponseEntity<Usuario> asignarNivel(HttpServletRequest request) throws Exception {
+        Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
 
+        Usuario actualizado = service.asignarNiveles(authenticatedUserId);
+
+        return ResponseEntity.ok(actualizado);
+    }
+    @GetMapping("/xp")
+    public ResponseEntity<Integer> obtenerXpUsuario(HttpServletRequest request){
+        Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
+        return ResponseEntity.ok(service.obtenerXPUsuario(authenticatedUserId));
+    }
 }

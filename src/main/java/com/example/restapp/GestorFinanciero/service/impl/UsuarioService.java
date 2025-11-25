@@ -4,6 +4,8 @@ import com.example.restapp.GestorFinanciero.DTO.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +108,32 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         usuario.setMisCategoriasMetas(new ArrayList<>());
 
         return save(usuario);
+    }
+
+    @Override
+    @Transactional
+    public Usuario asignarNiveles(Integer idUsuario) {
+
+        Usuario user = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Integer xpUsuario = user.getXp();
+
+        NivelUsuario nivel = nivelUsuarioRepo
+                .findFirstByXpTotalLessThanEqualOrderByXpTotalDesc(xpUsuario)
+                .orElseThrow(() -> new RuntimeException("No se encontró un nivel para ese XP"));
+
+        user.setNivelUsuario(nivel);
+
+        return usuarioRepo.save(user);
+    }
+
+    @Override
+    public Integer obtenerXPUsuario(Integer idUsuario){
+        Usuario user= usuarioRepo.findById(idUsuario)
+                      .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        return user.getXp();
     }
 
 

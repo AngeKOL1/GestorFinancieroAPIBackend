@@ -27,7 +27,7 @@ public class TrofeoService extends GenericService<Trofeos, Integer> implements I
         Usuario user = repoUsuario.findById(idUsuario)
                 .orElseThrow(() -> new ModelNotFoundException("Usuario con ID " + idUsuario + " no existe"));
 
-        Float xp = user.getXp();
+        Integer xp = user.getXp();
 
         // Trofeos trofeo = repoTrofeo.findTrofeoByXpBetween(xp)
         //         .orElseThrow(() -> new ModelNotFoundException("No hay trofeo para XP: " + xp));

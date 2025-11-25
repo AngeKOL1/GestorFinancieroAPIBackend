@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface NivelUsuarioRepo extends IGenericRepo<NivelUsuario, Integer>{
     Optional<NivelUsuario> findFirstByOrderByIdNivelAsc();
+    Optional<NivelUsuario> findFirstByXpTotalLessThanEqualOrderByXpTotalDesc(Integer xpTotal);
+
 }

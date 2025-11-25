@@ -38,7 +38,7 @@ public class Usuario {
     @Column(nullable = false)
     private LocalDate ultConexion;
     @Column(nullable = false)
-    private Float xp;
+    private Integer xp;
 
     @ManyToOne
     @JoinColumn(name = "nivelUsuario_id", nullable = false)

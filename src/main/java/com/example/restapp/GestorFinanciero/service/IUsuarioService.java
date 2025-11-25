@@ -5,5 +5,6 @@ import com.example.restapp.GestorFinanciero.models.Usuario;
 
 public interface IUsuarioService extends IGenericService<Usuario, Integer>{
     Usuario registrarUsuario(UsuarioRegistroDTO dto);
-    
+    Usuario asignarNiveles(Integer idUsuario);
+    Integer obtenerXPUsuario(Integer idUsuario);
 }
