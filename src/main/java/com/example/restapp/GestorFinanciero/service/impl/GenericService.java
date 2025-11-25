@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class GenericService<T, ID> implements IGenericService<T, ID> {
     protected abstract IGenericRepo<T, ID> getRepo();
-    public static final String notFound = "ID NOT FOUND: ";
+    public static final String ID_NOT_FOUND_MESSAGE = "ID NOT FOUND: ";
 
     @Override
     public T save(T t) throws Exception {
@@ -18,7 +18,7 @@ public abstract class GenericService<T, ID> implements IGenericService<T, ID> {
     @Override
     public T update(T t, ID id) throws Exception {
         getRepo().findById(id)
-                .orElseThrow(() -> new ModelNotFoundException(notFound  + id));
+                .orElseThrow(() -> new ModelNotFoundException(ID_NOT_FOUND_MESSAGE + id));
         return getRepo().save(t);
     }
 
@@ -30,13 +30,13 @@ public abstract class GenericService<T, ID> implements IGenericService<T, ID> {
     @Override
     public T findById(ID id) throws Exception {
         return getRepo().findById(id)
-                .orElseThrow(() -> new ModelNotFoundException(notFound  + id));
+                .orElseThrow(() -> new ModelNotFoundException(ID_NOT_FOUND_MESSAGE + id));
     }
 
     @Override
     public void delete(ID id) throws Exception {
         getRepo().findById(id)
-                .orElseThrow(() -> new ModelNotFoundException(notFound + id));
+                .orElseThrow(() -> new ModelNotFoundException(ID_NOT_FOUND_MESSAGE+ id));
         getRepo().deleteById(id);
     }
 }

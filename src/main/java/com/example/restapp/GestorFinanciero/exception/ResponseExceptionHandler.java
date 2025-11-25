@@ -10,7 +10,8 @@ import java.net.URI;
 
 @RestControllerAdvice
 public class ResponseExceptionHandler {
-    public static final String tipeE = "errorType";
+    public static final String ERROR_TYPE_PROPERTY = "errorType";
+
 
 
     @ExceptionHandler(ModelNotFoundException.class)
@@ -18,7 +19,7 @@ public class ResponseExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         pd.setTitle("Model Not Found");
         pd.setType(URI.create(request.getDescription(false)));
-        pd.setProperty(tipeE, "ModelNotFound");
+        pd.setProperty(ERROR_TYPE_PROPERTY, "ModelNotFound");
         return pd;
     }
 
@@ -27,7 +28,7 @@ public class ResponseExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         pd.setTitle("Bad Request");
         pd.setType(URI.create(request.getDescription(false)));
-        pd.setProperty(tipeE, "InvalidArgument");
+        pd.setProperty(ERROR_TYPE_PROPERTY, "InvalidArgument");
         return pd;
     }
 
@@ -36,7 +37,7 @@ public class ResponseExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
         pd.setTitle("Arithmetic Error");
         pd.setType(URI.create(request.getDescription(false)));
-        pd.setProperty(tipeE, "MathError");
+        pd.setProperty(ERROR_TYPE_PROPERTY, "MathError");
         return pd;
     }
 
@@ -46,7 +47,7 @@ public class ResponseExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         pd.setTitle("Internal Server Error");
         pd.setType(URI.create(request.getDescription(false)));
-        pd.setProperty(tipeE, "UnexpectedError");
+        pd.setProperty(ERROR_TYPE_PROPERTY, "UnexpectedError");
         return pd;
     }
 }
