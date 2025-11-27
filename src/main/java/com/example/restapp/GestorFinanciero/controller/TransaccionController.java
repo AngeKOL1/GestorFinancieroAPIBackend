@@ -1,7 +1,7 @@
 package com.example.restapp.GestorFinanciero.controller;
 
-import com.example.restapp.GestorFinanciero.DTO.EditarTransaccionDTO;
-import com.example.restapp.GestorFinanciero.DTO.TransaccionDTO;
+import com.example.restapp.GestorFinanciero.dto.EditarTransaccionDTO;
+import com.example.restapp.GestorFinanciero.dto.TransaccionDTO;
 import com.example.restapp.GestorFinanciero.models.Transaccion;
 import com.example.restapp.GestorFinanciero.service.ITransaccionService;
 

@@ -81,6 +81,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/usuarios/asignarNivel").authenticated()
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority(ADMIN)
 
+                        .requestMatchers(HttpMethod.POST, "/reportes/crear-reporte").hasAuthority(USUARIO)
+
                         .requestMatchers(HttpMethod.GET, "/transacciones/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/transacciones/**").hasAuthority(USUARIO)
 

@@ -1,6 +1,6 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
-import com.example.restapp.GestorFinanciero.DTO.UsuarioRegistroDTO;
+import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;
@@ -24,6 +24,8 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
     private final RolRepo rolRepo;
     private final NivelUsuarioRepo nivelUsuarioRepo;
     private final TrofeoRepo trofeoRepo;
+    private final UsuarioTrofeoRepo usuarioTrofeoRepo;
+    private final MetaRepo metaRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -71,6 +73,7 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
 
         usuario.setFechaRegistro(LocalDate.now());
         usuario.setUltConexion(LocalDate.now());
+        usuario.setXp(100);
 
         return usuarioRepo.save(usuario);
     }
@@ -94,7 +97,6 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         usuario.setFechaRegistro(LocalDate.now());
         usuario.setUltConexion(LocalDate.now());
 
-        // 🔐 Primero tomamos la contraseña del DTO y la encriptamos
         String passwordEncriptada = passwordEncoder.encode(dto.getContrasena());
         usuario.setContrasena(passwordEncriptada);
 
@@ -120,13 +122,14 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         Integer xpUsuario = user.getXp();
 
         NivelUsuario nivel = nivelUsuarioRepo
-                .findFirstByXpTotalLessThanEqualOrderByXpTotalDesc(xpUsuario)
+                .findTopByXpTotalLessThanEqualOrderByXpTotalDesc(xpUsuario)
                 .orElseThrow(() -> new RuntimeException("No se encontró un nivel para ese XP"));
 
         user.setNivelUsuario(nivel);
 
         return usuarioRepo.save(user);
     }
+
 
     @Override
     public Integer obtenerXPUsuario(Integer idUsuario){
@@ -135,6 +138,69 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         
         return user.getXp();
     }
+
+    @Override
+    @Transactional
+    public void asignarTrofeo(Usuario user, Integer idTrofeo) {
+
+        Trofeos trofeo = trofeoRepo.findById(idTrofeo)
+                .orElseThrow(() -> new RuntimeException("Trofeo no encontrado"));
+
+        // Verificar si ya tiene este trofeo
+        boolean yaLoTiene = user.getUsuarioTrofeo().stream()
+                .anyMatch(ut -> ut.getTrofeo().getIdTrofeo().equals(idTrofeo));
+
+        if (yaLoTiene) {
+            System.out.println("Usuario " + user.getId() + " ya tiene el trofeo " + idTrofeo);
+            return;
+        }
+
+        UsuarioTrofeo userTrofeo = new UsuarioTrofeo();
+        userTrofeo.setFechaObtencionTrofeo(LocalDate.now());
+        userTrofeo.setUsuario(user);
+        userTrofeo.setTrofeo(trofeo);
+
+        // agregar en ambos lados de la relación mapeada
+        user.getUsuarioTrofeo().add(userTrofeo);
+        trofeo.getUsuarioTrofeo().add(userTrofeo);
+
+        // sumar XP
+        user.setXp(user.getXp() + trofeo.getXpRequerida());
+
+        // guardar relación y usuario
+        usuarioTrofeoRepo.save(userTrofeo);
+        usuarioRepo.save(user);
+
+        // actualizar nivel
+        asignarNiveles(user.getId());
+    }
+
+
+
+
+    @Override
+    @Transactional
+    public boolean verificarMetasEnCategoriasDiferentes(Integer idUsuario) {
+
+        long categoriasDistintas = metaRepo.contarCategoriasDistintasPorUsuario(idUsuario);
+
+        System.out.println("Categorías distintas detectadas para usuario " + idUsuario + ": " + categoriasDistintas);
+
+        if (categoriasDistintas >= 5) {
+
+            Usuario usuario = usuarioRepo.findById(idUsuario)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            asignarTrofeo(usuario, 6); 
+
+            return true;
+        }
+
+        return false;
+    }
+
+
+
 
 
 }

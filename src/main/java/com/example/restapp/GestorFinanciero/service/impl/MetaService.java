@@ -1,11 +1,13 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
-import com.example.restapp.GestorFinanciero.DTO.CrearMetaDTO;
+import com.example.restapp.GestorFinanciero.dto.CrearMetaDTO;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
 import com.example.restapp.GestorFinanciero.service.IMetaService;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -20,6 +22,8 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
     private final MisCategoriasMetaRepo misCategoriasMetaRepo;
     private final TipoMetaRepo tipoMetaRepo;
     private final EstadoMetaRepo estadoMetaRepo;
+
+    private final  UsuarioService usuarioService;
 
     @Override
     protected IGenericRepo<Meta, Integer> getRepo(){
@@ -69,16 +73,61 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
                 .orElseThrow(() -> new Exception("Estado meta no encontrado"));
         meta.setEstadoMeta(estado);
 
-        meta.setMetaTransaccion(new HashSet<>()); // vacío por defecto
+        meta.setMetaTransaccion(new HashSet<>()); 
         meta.setPresupuesto(null); 
 
+        asignarXpPorMeta(dto.getIdUsuario());
 
-        return repo.save(meta);
+        repo.save(meta);
+        usuarioService.verificarMetasEnCategoriasDiferentes(usuario.getId());
+        return meta ;
     }
-
-   @Override
+    @Override
     public List<Meta> listarMetasPorUsuario(Integer idUsuario) throws Exception {
         return repo.findByUsuarioMetas_Id(idUsuario);
     }
+
+    @Override
+    public Integer primeraMeta(Integer idUsuario) {
+
+        Usuario usuario = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return usuario.getMetas().isEmpty() ? 0 : 1;
+    }
+
+    @Override
+    public Integer asignarXpPorMeta(Integer idUsuario) throws Exception{
+        Usuario usuario = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (primeraMeta(idUsuario) == 1){
+            usuario.setXp(usuario.getXp()+100);
+            usuarioService.asignarNiveles(idUsuario);
+            return 100;
+        }
+        usuarioService.asignarTrofeo(usuario, 2);
+        return 250;
+    }
+
+   @Override
+    public void validarCumplimientoDeMeta(Meta meta) throws Exception {
+
+        LocalDate fechaInicial = meta.getFechaInicial();
+        LocalDate fechaFinal = meta.getFechaFinal();
+        LocalDate hoy = LocalDate.now();
+
+        Usuario user = usuarioRepo.findById(meta.getUsuarioMetas().getId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        boolean montoCumplido = meta.getMontoActual().compareTo(meta.getMontoObjetivo()) >= 0;
+        boolean fechaEnRango = (hoy.isEqual(fechaInicial) || hoy.isAfter(fechaInicial))
+                            && (hoy.isEqual(fechaFinal) || hoy.isBefore(fechaFinal));
+
+        if (montoCumplido && fechaEnRango) {
+            usuarioService.asignarTrofeo(user, 3);
+            meta.setEstadoMeta(estadoMetaRepo.findById(1).orElseThrow(() -> new RuntimeException("Estado no encontrado")));
+        }
+    }
+
 
 }

@@ -25,9 +25,9 @@ public class Meta {
     @Column(nullable = false, length = 50)
     private String nombre;
     @Column(nullable = false)
-    private double montoActual;
+    private Double montoActual;
     @Column(nullable = false)
-    private Float montoObjetivo;
+    private Double montoObjetivo;
     @Column(nullable = false)
     private LocalDate fechaInicial;
     @Column(nullable = false)

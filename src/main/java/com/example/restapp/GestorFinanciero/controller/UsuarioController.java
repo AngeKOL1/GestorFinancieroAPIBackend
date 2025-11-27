@@ -1,6 +1,6 @@
 package com.example.restapp.GestorFinanciero.controller;
 
-import com.example.restapp.GestorFinanciero.DTO.UsuarioRegistroDTO;
+import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.models.Usuario;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;
 
@@ -35,7 +35,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
     @PutMapping("/asignarNivel")
-    public ResponseEntity<Usuario> asignarNivel(HttpServletRequest request) throws Exception {
+    public ResponseEntity<Usuario> asignarNivel(HttpServletRequest request){
         Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
 
         Usuario actualizado = service.asignarNiveles(authenticatedUserId);

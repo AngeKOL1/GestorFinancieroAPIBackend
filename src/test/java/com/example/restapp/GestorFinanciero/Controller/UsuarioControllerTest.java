@@ -1,7 +1,7 @@
 package com.example.restapp.GestorFinanciero.Controller;
 
 
-import com.example.restapp.GestorFinanciero.DTO.UsuarioRegistroDTO;
+import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.controller.UsuarioController;
 import com.example.restapp.GestorFinanciero.models.Usuario;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;

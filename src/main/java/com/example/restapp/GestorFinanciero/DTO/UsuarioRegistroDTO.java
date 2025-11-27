@@ -1,4 +1,4 @@
-package com.example.restapp.GestorFinanciero.DTO;
+package com.example.restapp.GestorFinanciero.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.restapp.GestorFinanciero.DTO;
+package com.example.restapp.GestorFinanciero.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +17,7 @@ public class CrearMetaDTO {
     private String nombre;
 
     @NotNull(message = "El monto objetivo es obligatorio")
-    private Float montoObjetivo;
+    private Double montoObjetivo;
 
     @NotNull(message = "La fecha final es obligatoria")
     private LocalDate fechaFinal;

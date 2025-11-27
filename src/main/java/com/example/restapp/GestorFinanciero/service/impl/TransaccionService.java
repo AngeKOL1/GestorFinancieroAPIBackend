@@ -9,6 +9,7 @@ import com.example.restapp.GestorFinanciero.repo.MetaRepo;
 import com.example.restapp.GestorFinanciero.repo.TipoTransaccionRepo;
 import com.example.restapp.GestorFinanciero.repo.TransaccionRepo;
 import com.example.restapp.GestorFinanciero.repo.UsuarioRepo;
+import com.example.restapp.GestorFinanciero.service.IMetaService;
 import com.example.restapp.GestorFinanciero.service.ITransaccionService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ import java.util.HashSet;
 import com.example.restapp.GestorFinanciero.models.Meta;
 import org.springframework.stereotype.Service;
 
-import com.example.restapp.GestorFinanciero.DTO.EditarTransaccionDTO;
-import com.example.restapp.GestorFinanciero.DTO.TransaccionDTO;
+import com.example.restapp.GestorFinanciero.dto.EditarTransaccionDTO;
+import com.example.restapp.GestorFinanciero.dto.TransaccionDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,8 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
     private final TipoTransaccionRepo tipoTransaccionRepo;
     private final MetaRepo metaRepo;
 
+    private final IMetaService metaService;
+
     @Override
     protected IGenericRepo<Transaccion, Integer> getRepo() {
         return repo;
@@ -37,6 +40,7 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
     //Faltan validaciones de negocio
     @Override
     public Transaccion CrearTransaccionDTO(TransaccionDTO dto) throws Exception {
+        Meta meta= new Meta();
         Usuario usuario = usuarioRepo.findById(dto.getIdUsuario())
             .orElseThrow(() -> new Exception("Usuario no encontrado"));
 
@@ -53,23 +57,25 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
         transaccion.setMetaTransaccion(new HashSet<>());
 
         if (dto.getIdMeta() != null) {
-            Meta meta = metaRepo.findById(dto.getIdMeta())
+            meta = metaRepo.findById(dto.getIdMeta())
                 .orElseThrow(() -> new Exception("Meta no encontrada"));
 
             if (!meta.getUsuarioMetas().getId().equals(dto.getIdUsuario())) {
                 throw new Exception("Usuario no autorizado para usar esta meta");
             }
-
+            meta.setMontoActual(meta.getMontoActual()+dto.getMonto());
             MetaTransaccion metaTransaccion = new MetaTransaccion();
             metaTransaccion.setMeta(meta);
             metaTransaccion.setTransaccion(transaccion);
             transaccion.getMetaTransaccion().add(metaTransaccion);
         }
 
+
         if (dto.getMonto() <= 0) {
             throw new Exception("El monto debe ser mayor que cero");
         }
-
+        //Validar si ya se cumplió el monto antes de la fecha estimada
+        metaService.validarCumplimientoDeMeta(meta);
         return repo.save(transaccion);
     }
 

@@ -1,6 +1,6 @@
 package com.example.restapp.GestorFinanciero.Service;
 
-import com.example.restapp.GestorFinanciero.DTO.TransaccionDTO;
+import com.example.restapp.GestorFinanciero.dto.TransaccionDTO;
 import com.example.restapp.GestorFinanciero.models.Meta;
 import com.example.restapp.GestorFinanciero.models.TipoTransaccion;
 import com.example.restapp.GestorFinanciero.models.Transaccion;

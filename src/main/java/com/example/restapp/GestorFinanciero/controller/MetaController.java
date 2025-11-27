@@ -1,6 +1,6 @@
 package com.example.restapp.GestorFinanciero.controller;
 
-import com.example.restapp.GestorFinanciero.DTO.CrearMetaDTO;
+import com.example.restapp.GestorFinanciero.dto.CrearMetaDTO;
 import com.example.restapp.GestorFinanciero.models.Meta;
 import com.example.restapp.GestorFinanciero.service.IMetaService;
 

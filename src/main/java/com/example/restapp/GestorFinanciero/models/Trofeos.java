@@ -1,6 +1,7 @@
 package com.example.restapp.GestorFinanciero.models;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,7 @@ public class Trofeos {
     private Integer xpRequerida;
 
     @OneToMany(mappedBy = "trofeo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "trofeo-usuarios")   // ← ESTA LÍNEA FALTABA
     private Set<UsuarioTrofeo> usuarioTrofeo = new HashSet<>();
+
 }
