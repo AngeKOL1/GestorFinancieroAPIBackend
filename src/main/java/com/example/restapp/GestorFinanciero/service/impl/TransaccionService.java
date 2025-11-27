@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.restapp.GestorFinanciero.dto.EditarTransaccionDTO;
 import com.example.restapp.GestorFinanciero.dto.TransaccionDTO;
+import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +40,10 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
     }
     //Faltan validaciones de negocio
     @Override
-    public Transaccion CrearTransaccionDTO(TransaccionDTO dto) throws Exception {
+    public Transaccion CrearTransaccionDTO(TransaccionDTO dto) {
         Meta meta= new Meta();
         Usuario usuario = usuarioRepo.findById(dto.getIdUsuario())
-            .orElseThrow(() -> new Exception("Usuario no encontrado"));
+            .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
         Transaccion transaccion = new Transaccion();
         transaccion.setMonto(dto.getMonto());
@@ -51,17 +52,17 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
         transaccion.setFechaTransaccion(LocalDate.now());
 
         TipoTransaccion tipoTransaccion = tipoTransaccionRepo.findById(dto.getTipoTransaccionId())
-            .orElseThrow(() -> new Exception("Tipo de transacción no encontrado"));
+            .orElseThrow(() -> new ModelNotFoundException("Tipo de transacción no encontrado"));
         transaccion.setTipoTransaccion(tipoTransaccion);
 
         transaccion.setMetaTransaccion(new HashSet<>());
 
         if (dto.getIdMeta() != null) {
             meta = metaRepo.findById(dto.getIdMeta())
-                .orElseThrow(() -> new Exception("Meta no encontrada"));
+                .orElseThrow(() -> new ModelNotFoundException("Meta no encontrada"));
 
             if (!meta.getUsuarioMetas().getId().equals(dto.getIdUsuario())) {
-                throw new Exception("Usuario no autorizado para usar esta meta");
+                throw new ModelNotFoundException("Usuario no autorizado para usar esta meta");
             }
             meta.setMontoActual(meta.getMontoActual()+dto.getMonto());
             MetaTransaccion metaTransaccion = new MetaTransaccion();
@@ -72,7 +73,7 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
 
 
         if (dto.getMonto() <= 0) {
-            throw new Exception("El monto debe ser mayor que cero");
+            throw new IllegalArgumentException("El monto debe ser mayor que cero");
         }
         //Validar si ya se cumplió el monto antes de la fecha estimada
         metaService.validarCumplimientoDeMeta(meta);
@@ -80,13 +81,13 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
     }
 
     @Override
-    public Transaccion updateTransaccion(Integer idTransaccion, Integer idUsuario, EditarTransaccionDTO nuevosDatos) throws Exception {
+    public Transaccion updateTransaccion(Integer idTransaccion, Integer idUsuario, EditarTransaccionDTO nuevosDatos)  {
 
         Transaccion tupdate = repo.findById(idTransaccion)
-                .orElseThrow(() -> new Exception("Transacción no encontrada"));
+                .orElseThrow(() -> new ModelNotFoundException("Transacción no encontrada"));
 
         if (!tupdate.getUsuarioTransacciones().getId().equals(idUsuario)) {
-            throw new Exception("Usuario no autorizado para actualizar esta transacción");
+            throw new IllegalArgumentException("Usuario no autorizado para actualizar esta transacción");
         }
 
         tupdate.setDescripcion(nuevosDatos.getDescripcion());

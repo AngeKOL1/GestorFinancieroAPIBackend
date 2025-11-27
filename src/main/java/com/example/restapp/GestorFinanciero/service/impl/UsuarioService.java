@@ -1,6 +1,7 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
 import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
+import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;
@@ -49,7 +50,7 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         if (usuario.getMisCategoriasMetas() == null) usuario.setMisCategoriasMetas(new ArrayList<>());
 
         Rol rolUsuario = rolRepo.findByNombre("USUARIO")
-                .orElseThrow(() -> new RuntimeException("Rol 'USUARIO' no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Rol 'USUARIO' no encontrado"));
 
         UsuarioRol usuarioRol = new UsuarioRol();
         usuarioRol.setUsuario(usuario);
@@ -59,11 +60,11 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         usuario.getUsuarioRoles().add(usuarioRol);
 
         NivelUsuario nivelInicial = nivelUsuarioRepo.findFirstByOrderByIdNivelAsc()
-                .orElseThrow(() -> new RuntimeException("Nivel inicial no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Nivel inicial no encontrado"));
         usuario.setNivelUsuario(nivelInicial);
 
         Trofeos trofeoInicial = trofeoRepo.findFirstByOrderByIdTrofeoAsc()
-                .orElseThrow(() -> new RuntimeException("Trofeo inicial no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Trofeo inicial no encontrado"));
 
         UsuarioTrofeo usuarioTrofeo = new UsuarioTrofeo();
         usuarioTrofeo.setUsuario(usuario);
@@ -117,13 +118,13 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
     public Usuario asignarNiveles(Integer idUsuario) {
 
         Usuario user = usuarioRepo.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
         Integer xpUsuario = user.getXp();
 
         NivelUsuario nivel = nivelUsuarioRepo
                 .findTopByXpTotalLessThanEqualOrderByXpTotalDesc(xpUsuario)
-                .orElseThrow(() -> new RuntimeException("No se encontró un nivel para ese XP"));
+                .orElseThrow(() -> new ModelNotFoundException("No se encontró un nivel para ese XP"));
 
         user.setNivelUsuario(nivel);
 
@@ -134,7 +135,7 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
     @Override
     public Integer obtenerXPUsuario(Integer idUsuario){
         Usuario user= usuarioRepo.findById(idUsuario)
-                      .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                      .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
         
         return user.getXp();
     }
@@ -144,9 +145,8 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
     public void asignarTrofeo(Usuario user, Integer idTrofeo) {
 
         Trofeos trofeo = trofeoRepo.findById(idTrofeo)
-                .orElseThrow(() -> new RuntimeException("Trofeo no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Trofeo no encontrado"));
 
-        // Verificar si ya tiene este trofeo
         boolean yaLoTiene = user.getUsuarioTrofeo().stream()
                 .anyMatch(ut -> ut.getTrofeo().getIdTrofeo().equals(idTrofeo));
 
@@ -160,18 +160,15 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         userTrofeo.setUsuario(user);
         userTrofeo.setTrofeo(trofeo);
 
-        // agregar en ambos lados de la relación mapeada
         user.getUsuarioTrofeo().add(userTrofeo);
         trofeo.getUsuarioTrofeo().add(userTrofeo);
 
-        // sumar XP
+
         user.setXp(user.getXp() + trofeo.getXpRequerida());
 
-        // guardar relación y usuario
         usuarioTrofeoRepo.save(userTrofeo);
         usuarioRepo.save(user);
 
-        // actualizar nivel
         asignarNiveles(user.getId());
     }
 
@@ -189,7 +186,7 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         if (categoriasDistintas >= 5) {
 
             Usuario usuario = usuarioRepo.findById(idUsuario)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
             asignarTrofeo(usuario, 6); 
 

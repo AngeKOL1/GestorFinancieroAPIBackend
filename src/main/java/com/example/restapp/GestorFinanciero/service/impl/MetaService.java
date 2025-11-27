@@ -1,6 +1,7 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
 import com.example.restapp.GestorFinanciero.dto.CrearMetaDTO;
+import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
 import com.example.restapp.GestorFinanciero.service.IMetaService;
@@ -31,7 +32,7 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
     }
 
     @Override
-    public Meta crearMetaDTO(CrearMetaDTO dto) throws Exception {
+    public Meta crearMetaDTO(CrearMetaDTO dto) {
         Meta meta = new Meta();
         meta.setNombre(dto.getNombre());
         meta.setMontoActual(0.0);
@@ -51,26 +52,26 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
 
 
         Usuario usuario = usuarioRepo.findById(dto.getIdUsuario())
-                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
         meta.setUsuarioMetas(usuario);
 
         if (dto.getIdCategoria() != null) {
             CategoriaMeta categoria = categoriaMetaRepo.findById(dto.getIdCategoria())
-                    .orElseThrow(() -> new Exception("Categoría meta no encontrada"));
+                    .orElseThrow(() -> new ModelNotFoundException("Categoría meta no encontrada"));
             meta.setCategoriaMetas(categoria);
         } else if (dto.getIdMisCategoria() != null) {
             MisCategoriasMetas miscategoria = misCategoriasMetaRepo.findById(dto.getIdMisCategoria())
-                    .orElseThrow(() -> new Exception("Mis categoría meta no encontrada"));
+                    .orElseThrow(() -> new ModelNotFoundException("Mis categoría meta no encontrada"));
             meta.setMisCategoriaMeta(miscategoria);
         }
 
 
         TipoMeta tipoMeta = tipoMetaRepo.findById(dto.getIdMeta())
-                .orElseThrow(() -> new Exception("Tipo de meta no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Tipo de meta no encontrado"));
         meta.setTipoMeta(tipoMeta);
 
         EstadoMeta estado = estadoMetaRepo.findById(dto.getIdEstadoMeta())
-                .orElseThrow(() -> new Exception("Estado meta no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Estado meta no encontrado"));
         meta.setEstadoMeta(estado);
 
         meta.setMetaTransaccion(new HashSet<>()); 
@@ -83,7 +84,7 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
         return meta ;
     }
     @Override
-    public List<Meta> listarMetasPorUsuario(Integer idUsuario) throws Exception {
+    public List<Meta> listarMetasPorUsuario(Integer idUsuario) {
         return repo.findByUsuarioMetas_Id(idUsuario);
     }
 
@@ -91,15 +92,15 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
     public Integer primeraMeta(Integer idUsuario) {
 
         Usuario usuario = usuarioRepo.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
         return usuario.getMetas().isEmpty() ? 0 : 1;
     }
 
     @Override
-    public Integer asignarXpPorMeta(Integer idUsuario) throws Exception{
+    public Integer asignarXpPorMeta(Integer idUsuario){
         Usuario usuario = usuarioRepo.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
         if (primeraMeta(idUsuario) == 1){
             usuario.setXp(usuario.getXp()+100);
             usuarioService.asignarNiveles(idUsuario);
@@ -110,14 +111,14 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
     }
 
    @Override
-    public void validarCumplimientoDeMeta(Meta meta) throws Exception {
+    public void validarCumplimientoDeMeta(Meta meta) {
 
         LocalDate fechaInicial = meta.getFechaInicial();
         LocalDate fechaFinal = meta.getFechaFinal();
         LocalDate hoy = LocalDate.now();
 
         Usuario user = usuarioRepo.findById(meta.getUsuarioMetas().getId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
         boolean montoCumplido = meta.getMontoActual().compareTo(meta.getMontoObjetivo()) >= 0;
         boolean fechaEnRango = (hoy.isEqual(fechaInicial) || hoy.isAfter(fechaInicial))
@@ -125,7 +126,7 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
 
         if (montoCumplido && fechaEnRango) {
             usuarioService.asignarTrofeo(user, 3);
-            meta.setEstadoMeta(estadoMetaRepo.findById(1).orElseThrow(() -> new RuntimeException("Estado no encontrado")));
+            meta.setEstadoMeta(estadoMetaRepo.findById(1).orElseThrow(() -> new ModelNotFoundException("Estado no encontrado")));
         }
     }
 

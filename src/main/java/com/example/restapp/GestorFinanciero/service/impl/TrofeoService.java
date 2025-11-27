@@ -22,7 +22,7 @@ public class TrofeoService extends GenericService<Trofeos, Integer> implements I
     }
     //Método para asignar trofeo según XP
     @Override
-    public Trofeos asignarTrofeoPorXP(Integer idUsuario) throws Exception {
+    public Trofeos asignarTrofeoPorXP(Integer idUsuario) {
 
         Usuario user = repoUsuario.findById(idUsuario)
                 .orElseThrow(() -> new ModelNotFoundException("Usuario con ID " + idUsuario + " no existe"));

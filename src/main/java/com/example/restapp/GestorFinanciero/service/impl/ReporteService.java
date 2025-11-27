@@ -1,6 +1,7 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
 import com.example.restapp.GestorFinanciero.dto.ReporteDTO;
+import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 import com.example.restapp.GestorFinanciero.models.Meta;
 import com.example.restapp.GestorFinanciero.models.Reporte;
 import com.example.restapp.GestorFinanciero.models.Usuario;
@@ -33,16 +34,16 @@ public class ReporteService extends GenericService<Reporte, Integer> implements 
     public Reporte generarReporte(ReporteDTO dto, Integer idUsuario) {
 
         Usuario usuario = usuarioRepo.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
         Meta meta = null;
         if (dto.getIdMeta() != null) {
 
             meta = metaRepo.findById(dto.getIdMeta())
-                    .orElseThrow(() -> new RuntimeException("Meta no encontrada"));
+                    .orElseThrow(() -> new ModelNotFoundException("Meta no encontrada"));
 
             if (!meta.getUsuarioMetas().getId().equals(idUsuario)) {
-                throw new RuntimeException("La meta no pertenece al usuario que intenta generar el reporte");
+                throw new IllegalArgumentException("La meta no pertenece al usuario que intenta generar el reporte");
             }
         }
 
