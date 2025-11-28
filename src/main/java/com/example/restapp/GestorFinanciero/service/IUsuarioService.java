@@ -9,4 +9,5 @@ public interface IUsuarioService extends IGenericService<Usuario, Integer>{
     Integer obtenerXPUsuario(Integer idUsuario);
     void asignarTrofeo (Usuario user, Integer idTrofeo);
     boolean verificarMetasEnCategoriasDiferentes(Integer idUsuario);
+    boolean usuarioTieneTrofeo(Usuario user, Integer idTrofeo);
 }

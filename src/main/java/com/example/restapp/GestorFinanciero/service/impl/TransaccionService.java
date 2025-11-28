@@ -11,6 +11,7 @@ import com.example.restapp.GestorFinanciero.repo.TransaccionRepo;
 import com.example.restapp.GestorFinanciero.repo.UsuarioRepo;
 import com.example.restapp.GestorFinanciero.service.IMetaService;
 import com.example.restapp.GestorFinanciero.service.ITransaccionService;
+import com.example.restapp.GestorFinanciero.service.IUsuarioService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +34,7 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
     private final MetaRepo metaRepo;
 
     private final IMetaService metaService;
+    private final IUsuarioService usuarioService;
 
     @Override
     protected IGenericRepo<Transaccion, Integer> getRepo() {
@@ -77,7 +79,9 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
         }
         //Validar si ya se cumplió el monto antes de la fecha estimada
         metaService.validarCumplimientoDeMeta(meta);
-        return repo.save(transaccion);
+        repo.save(transaccion);
+        cantidadDeTransacciones(usuario);
+        return transaccion;
     }
 
     @Override
@@ -96,5 +100,20 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
 
         return repo.save(tupdate);
     }
+
+   @Override
+    public Integer cantidadDeTransacciones(Usuario user) {
+
+        int cantidad = user.getTransacciones().size();
+
+        if (cantidad >= 20 && ! usuarioService.usuarioTieneTrofeo(user, 8)) {
+            usuarioService.asignarTrofeo(user, 8);
+            usuarioService.asignarNiveles(user.getId());
+        }
+
+        return cantidad;
+    }
+
+
 
 }

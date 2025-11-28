@@ -11,4 +11,5 @@ public interface IMetaService extends IGenericService<Meta, Integer> {
     Integer primeraMeta(Integer idUsuario);
     Integer asignarXpPorMeta(Integer idUsuario);
     void validarCumplimientoDeMeta (Meta meta);
+    void verificarCumplimientoRapido(Meta meta);
 }

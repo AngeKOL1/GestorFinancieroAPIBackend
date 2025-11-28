@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 
@@ -129,6 +130,28 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
             meta.setEstadoMeta(estadoMetaRepo.findById(1).orElseThrow(() -> new ModelNotFoundException("Estado no encontrado")));
         }
     }
+
+    @Override
+    public void verificarCumplimientoRapido(Meta meta) {
+
+        if (meta.getMontoActual() < meta.getMontoObjetivo()) {
+            return;
+        }
+
+        LocalDate fechaInicio = meta.getFechaInicial();
+        LocalDate fechaCumplimiento = LocalDate.now(); 
+
+        long dias = ChronoUnit.DAYS.between(fechaInicio, fechaCumplimiento);
+                    Usuario usuario = meta.getUsuarioMetas();
+
+        if (dias < 7 && ! usuarioService.usuarioTieneTrofeo(usuario, 13)) {
+
+            usuarioService.asignarTrofeo(usuario, 13);
+
+            System.out.println("Trofeo por cumplimiento rápido asignado");
+        }
+    }
+
 
 
 }

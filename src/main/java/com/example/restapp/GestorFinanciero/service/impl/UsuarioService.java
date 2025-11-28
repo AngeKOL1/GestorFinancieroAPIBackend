@@ -196,8 +196,9 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         return false;
     }
 
-
-
-
-
+    @Override
+    public boolean usuarioTieneTrofeo(Usuario user, Integer idTrofeo) {
+        return user.getUsuarioTrofeo().stream()
+                .anyMatch(t -> t.getTrofeo().getIdTrofeo().equals(idTrofeo));
+    }
 }
