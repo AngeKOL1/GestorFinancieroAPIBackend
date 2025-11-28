@@ -23,13 +23,13 @@ public class TransaccionController {
     private final ITransaccionService service;
 
     @GetMapping
-    public ResponseEntity<List<Transaccion>> findAll() throws Exception {
+    public ResponseEntity<List<Transaccion>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping
     public ResponseEntity<Transaccion> CrearTransaccionDTO(@RequestBody TransaccionDTO dto,
-                                            HttpServletRequest request) throws Exception {
+                                            HttpServletRequest request) {
             Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
             dto.setIdUsuario(authenticatedUserId);
 
@@ -40,7 +40,7 @@ public class TransaccionController {
     public ResponseEntity<Transaccion> actualizarTransaccion(
             @PathVariable Integer id,
             @RequestBody EditarTransaccionDTO transaccion,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request){
 
         Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
 

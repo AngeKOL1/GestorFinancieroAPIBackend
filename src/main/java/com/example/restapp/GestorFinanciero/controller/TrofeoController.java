@@ -16,7 +16,7 @@ import java.util.List;
 public class TrofeoController {
     private final ITrofeoService service;
     @GetMapping
-    public ResponseEntity<List<Trofeos>> findAll() throws Exception {
+    public ResponseEntity<List<Trofeos>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 }

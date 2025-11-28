@@ -16,28 +16,28 @@ import java.util.List;
 @RequestMapping("/metas")
 @RequiredArgsConstructor
 public class MetaController {
+
     private final IMetaService service;
 
     @GetMapping
-    public ResponseEntity<List<Meta>> findAll() throws Exception {
+    public ResponseEntity<List<Meta>> findAll(){
         return ResponseEntity.ok(service.findAll());
     }
+
     @GetMapping("/misMetas")
-    public ResponseEntity<List<Meta>> findAllForUser( HttpServletRequest request) throws Exception {
+    public ResponseEntity<List<Meta>> findAllForUser(HttpServletRequest request) {
         Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
-        List<Meta> metas = service.listarMetasPorUsuario(authenticatedUserId);
-        return ResponseEntity.ok(metas);
+        return ResponseEntity.ok(service.listarMetasPorUsuario(authenticatedUserId));
     }
-    
 
     @PostMapping
     public ResponseEntity<Meta> crearMeta(@RequestBody CrearMetaDTO dto,
-                                            HttpServletRequest request) throws Exception {
-            Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
-            dto.setIdUsuario(authenticatedUserId);
+                                          HttpServletRequest request) {
+        Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
+        dto.setIdUsuario(authenticatedUserId);
 
-            Meta meta = service.crearMetaDTO(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(meta);
-        }
-    
+        Meta meta = service.crearMetaDTO(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(meta);
+    }
 }
+

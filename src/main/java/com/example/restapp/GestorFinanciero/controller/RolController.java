@@ -19,12 +19,12 @@ public class RolController {
     private final IRolService service;
 
     @GetMapping
-    public ResponseEntity<List<Rol>> findAll() throws Exception {
+    public ResponseEntity<List<Rol>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<Rol> save(@RequestBody Rol rol) throws Exception {
+    public ResponseEntity<Rol> save(@RequestBody Rol rol) {
         Rol obj = service.save(rol);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

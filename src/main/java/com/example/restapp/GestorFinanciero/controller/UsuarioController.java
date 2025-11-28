@@ -20,12 +20,12 @@ import java.util.List;
 public class UsuarioController {
     private final IUsuarioService service;
     @GetMapping
-    public ResponseEntity<List<Usuario>> findAll() throws Exception{
+    public ResponseEntity<List<Usuario>> findAll(){
         List<Usuario> list = service.findAll();
         return ResponseEntity.ok(list);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> findById(@PathVariable("id") Integer id) throws Exception{
+    public ResponseEntity<Usuario> findById(@PathVariable("id") Integer id) {
         Usuario obj =  service.findById(id);
         return ResponseEntity.ok(obj);
     }

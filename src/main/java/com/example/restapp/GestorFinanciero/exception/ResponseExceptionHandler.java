@@ -1,5 +1,6 @@
 package com.example.restapp.GestorFinanciero.exception;
 
+import org.apache.hc.client5.http.auth.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,4 +51,21 @@ public class ResponseExceptionHandler {
         pd.setProperty(ERROR_TYPE_PROPERTY, "UnexpectedError");
         return pd;
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ProblemDetail handleInvalidCredentialsException(InvalidCredentialsException ex, WebRequest request) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        pd.setTitle("Invalid Credentials");
+        pd.setProperty(ERROR_TYPE_PROPERTY, "AuthError");
+        return pd;
+    }
+
+    @ExceptionHandler(UserDisabledException.class)
+    public ProblemDetail handleUserDisabledException(UserDisabledException ex, WebRequest request) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        pd.setTitle("User Disabled");
+        pd.setProperty(ERROR_TYPE_PROPERTY, "AuthError");
+        return pd;
+    }
+
 }

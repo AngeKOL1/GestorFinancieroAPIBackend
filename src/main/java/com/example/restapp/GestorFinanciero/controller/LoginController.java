@@ -4,10 +4,14 @@ import com.example.restapp.GestorFinanciero.Security.JwtRequest;
 import com.example.restapp.GestorFinanciero.Security.JwtResponse;
 import com.example.restapp.GestorFinanciero.Security.JwtTokenUtil;
 import com.example.restapp.GestorFinanciero.Security.JwtUserDetailsService;
+import com.example.restapp.GestorFinanciero.exception.InvalidCredentialsException;
+import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
+import com.example.restapp.GestorFinanciero.exception.UserDisabledException;
 import com.example.restapp.GestorFinanciero.models.Usuario;
 import com.example.restapp.GestorFinanciero.repo.UsuarioRepo;
 
 import lombok.RequiredArgsConstructor;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,24 +33,25 @@ public class LoginController {
     private final UsuarioRepo usuarioRepo;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest req) throws Exception {
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest req) {
         authenticate(req.getCorreo(), req.getPassword());
 
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(req.getCorreo());
         Usuario usuario = usuarioRepo.findByCorreo(req.getCorreo())
-                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
         final String token = jwtTokenUtil.generateToken(userDetails, usuario.getId());
 
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    private void authenticate(String correo, String contrasena) throws Exception {
+    private void authenticate(String correo, String contrasena) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(correo, contrasena));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new UserDisabledException("El usuario está deshabilitado");
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new InvalidCredentialsException("Credenciales inválidas");
         }
     }
+
 }

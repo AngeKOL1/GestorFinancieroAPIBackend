@@ -16,7 +16,7 @@ import java.util.List;
 public class NivelesUsuarioController {
     private final INivelUsuarioService service;
     @GetMapping
-    public ResponseEntity<List<NivelUsuario>> findAll() throws Exception{
+    public ResponseEntity<List<NivelUsuario>> findAll(){
         List<NivelUsuario> list = service.findAll();
         return ResponseEntity.ok(list);
     }
