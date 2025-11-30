@@ -23,9 +23,14 @@ public class TransaccionController {
     private final ITransaccionService service;
 
     @GetMapping
-    public ResponseEntity<List<Transaccion>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<List<Transaccion>> listarTransaccionesUsuario(
+            HttpServletRequest request) {
+
+        Integer userId = (Integer) request.getAttribute("authenticatedUserId");
+
+        return ResponseEntity.ok(service.listarTransaccionesPorUsuario(userId));
     }
+
 
     @PostMapping
     public ResponseEntity<Transaccion> CrearTransaccionDTO(@RequestBody TransaccionDTO dto,
@@ -48,4 +53,28 @@ public class TransaccionController {
 
         return ResponseEntity.ok(transaccionActualizada);
     }
+    @DeleteMapping("/transacciones/{id}")
+    public ResponseEntity<String> eliminarTransaccion(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+
+        Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
+
+        service.eliminarTransaccion(id, authenticatedUserId);
+
+        return ResponseEntity.ok("Transacción eliminada correctamente");
+    }
+
+    @GetMapping("/transacciones/presupuesto/{idPresupuesto}")
+    public ResponseEntity<List<Transaccion>> listarPorPresupuesto(
+            @PathVariable Integer idPresupuesto,
+            HttpServletRequest request) {
+
+        Integer userId = (Integer) request.getAttribute("authenticatedUserId");
+
+        return ResponseEntity.ok(service.listarTransaccionesPorPresupuesto(idPresupuesto, userId));
+    }
+
+
+
 }

@@ -7,8 +7,11 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,6 +34,9 @@ public class Presupuesto {
     private LocalDate fechaInicial;
     @Column(nullable = false)
     private LocalDate fechaFinal;
+    @Column(nullable = false)
+    private Float montoActual = 0f;
+
 
 
     @ManyToOne
@@ -39,11 +45,16 @@ public class Presupuesto {
     private Usuario usuarioPresupuesto;
 
     @OneToOne
-    @JoinColumn(name = "meta_id", nullable = false)
+    @JoinColumn(name = "meta_id", nullable = true)
     private Meta meta;
 
     @ManyToOne
     @JoinColumn(name = "estadopresupuesto_id", nullable = false)
+    @JsonManagedReference(value = "estado-presupuesto")
     private EstadoPresupuesto estadoPresupuesto;
+
+    @OneToMany(mappedBy = "presupuesto", cascade = CascadeType.ALL, orphanRemoval = false)
+    @JsonManagedReference(value = "presupuesto-transacciones")
+    private List<Transaccion> transacciones = new ArrayList<>();
 
 }

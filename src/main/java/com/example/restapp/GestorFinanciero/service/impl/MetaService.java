@@ -152,6 +152,20 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
         }
     }
 
+    
+    @Override
+    public List<Transaccion> listarTransaccionesPorMeta(Integer idMeta, Integer idUsuario) {
+
+        Meta meta = repo.findById(idMeta)
+                .orElseThrow(() -> new ModelNotFoundException("Meta no encontrada"));
+
+        if (!meta.getUsuarioMetas().getId().equals(idUsuario)) {
+            throw new IllegalArgumentException("No puedes ver transacciones de una meta que no es tuya");
+        }
+
+        return repo.findByMetaId(idMeta);
+    }
+
 
 
 }

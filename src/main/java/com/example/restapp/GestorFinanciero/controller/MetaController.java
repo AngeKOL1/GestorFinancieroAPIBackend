@@ -2,6 +2,7 @@ package com.example.restapp.GestorFinanciero.controller;
 
 import com.example.restapp.GestorFinanciero.dto.CrearMetaDTO;
 import com.example.restapp.GestorFinanciero.models.Meta;
+import com.example.restapp.GestorFinanciero.models.Transaccion;
 import com.example.restapp.GestorFinanciero.service.IMetaService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,10 +20,6 @@ public class MetaController {
 
     private final IMetaService service;
 
-    @GetMapping
-    public ResponseEntity<List<Meta>> findAll(){
-        return ResponseEntity.ok(service.findAll());
-    }
 
     @GetMapping("/misMetas")
     public ResponseEntity<List<Meta>> findAllForUser(HttpServletRequest request) {
@@ -38,6 +35,16 @@ public class MetaController {
 
         Meta meta = service.crearMetaDTO(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(meta);
+    }
+
+    @GetMapping("/transacciones/meta/{idMeta}")
+    public ResponseEntity<List<Transaccion>> listarPorMeta(
+            @PathVariable Integer idMeta,
+            HttpServletRequest request) {
+
+        Integer userId = (Integer) request.getAttribute("authenticatedUserId");
+
+        return ResponseEntity.ok(service.listarTransaccionesPorMeta(idMeta, userId));
     }
 }
 

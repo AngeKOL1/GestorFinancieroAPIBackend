@@ -81,15 +81,22 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/usuarios/asignarNivel").authenticated()
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority(ADMIN)
 
+                        .requestMatchers(HttpMethod.POST, "/presupuestos").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/presupuestos/mis-presupuestos").hasAuthority(USUARIO)
+
+
                         .requestMatchers(HttpMethod.POST, "/reportes/crear-reporte").hasAuthority(USUARIO)
 
                         .requestMatchers(HttpMethod.GET, "/transacciones/**").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.GET, "/transacciones//transacciones/presupuesto/{idPresupuesto}").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/transacciones/**").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.DELETE, "/transacciones/transacciones/{id}").hasAuthority(USUARIO)
+                        
 
+                        .requestMatchers(HttpMethod.GET, "/metas/transacciones/meta/{idMeta}").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/metas/*/metas/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.GET, "/metas/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.PUT, "/meta/**").authenticated()
-
                         .requestMatchers(HttpMethod.GET, "/meta/misMetas/").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/niveles/**").authenticated()

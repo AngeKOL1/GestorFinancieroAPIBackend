@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,5 +28,6 @@ public class EstadoPresupuesto {
     private String descripcionEstadoPresupuesto;
 
     @OneToMany(mappedBy = "estadoPresupuesto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "estado-presupuesto")
     private List<Presupuesto> presupuestos = new ArrayList<>();
 }

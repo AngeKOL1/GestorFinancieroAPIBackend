@@ -12,8 +12,11 @@ public class TransaccionDTO {
     private String descripcion;
     @NotNull(message = "El id de usuario es obligatorio")
     private Integer idUsuario;
-    @NotNull(message = "El id de meta es obligatorio")
+
     private Integer idMeta;
     @NotNull(message = "El id de tipo de transaccion es obligatorio")
     private Integer tipoTransaccionId;
+
+    private Integer presupuestoId;
+
 }

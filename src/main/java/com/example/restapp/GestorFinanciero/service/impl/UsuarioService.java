@@ -74,7 +74,7 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
 
         usuario.setFechaRegistro(LocalDate.now());
         usuario.setUltConexion(LocalDate.now());
-        usuario.setXp(100);
+        usuario.setXp(usuario.getXp()+100);
 
         return usuarioRepo.save(usuario);
     }
