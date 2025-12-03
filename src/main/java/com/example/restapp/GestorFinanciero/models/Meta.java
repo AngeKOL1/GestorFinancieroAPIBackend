@@ -36,7 +36,7 @@ public class Meta {
 
     //Prioridad
     @ManyToOne
-    @JoinColumn(name = "categoriaMeta_id", nullable = false)
+    @JoinColumn(name = "categoriaMeta_id", nullable = true)
     @JsonBackReference(value = "categoriaMeta-metas")
     private CategoriaMeta categoriaMetas;
 

@@ -1,6 +1,7 @@
 package com.example.restapp.GestorFinanciero.controller;
 
 import com.example.restapp.GestorFinanciero.dto.CrearMetaDTO;
+import com.example.restapp.GestorFinanciero.dto.EditarMetaDTO;
 import com.example.restapp.GestorFinanciero.models.Meta;
 import com.example.restapp.GestorFinanciero.models.Transaccion;
 import com.example.restapp.GestorFinanciero.service.IMetaService;
@@ -45,6 +46,30 @@ public class MetaController {
         Integer userId = (Integer) request.getAttribute("authenticatedUserId");
 
         return ResponseEntity.ok(service.listarTransaccionesPorMeta(idMeta, userId));
+    }
+    @PutMapping("/{idMeta}")
+    public ResponseEntity<Meta> editarMeta(
+            @PathVariable Integer idMeta,
+            @RequestBody EditarMetaDTO dto,
+            HttpServletRequest request) {
+
+        Integer idUsuario = (Integer) request.getAttribute("authenticatedUserId");
+
+        Meta metaActualizada = service.editarMeta(idMeta, idUsuario, dto);
+
+        return ResponseEntity.ok(metaActualizada);
+    }
+
+    @DeleteMapping("/{idMeta}")
+    public ResponseEntity<Void> eliminarMeta(
+            @PathVariable Integer idMeta,
+            HttpServletRequest request) {
+
+        Integer idUsuario = (Integer) request.getAttribute("authenticatedUserId");
+
+        service.eliminarMeta(idMeta, idUsuario);
+
+        return ResponseEntity.noContent().build();
     }
 }
 

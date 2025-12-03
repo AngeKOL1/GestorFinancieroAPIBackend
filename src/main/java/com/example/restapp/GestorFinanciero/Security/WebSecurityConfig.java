@@ -95,6 +95,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/metas/transacciones/meta/{idMeta}").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/metas/*/metas/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.GET, "/metas/**").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.PUT, "/metas/{id}").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.DELETE, "/metas/{id}").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.PUT, "/meta/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/meta/misMetas/").authenticated()
 

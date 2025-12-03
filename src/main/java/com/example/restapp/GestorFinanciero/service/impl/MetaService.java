@@ -1,6 +1,7 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
 import com.example.restapp.GestorFinanciero.dto.CrearMetaDTO;
+import com.example.restapp.GestorFinanciero.dto.EditarMetaDTO;
 import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
@@ -8,7 +9,7 @@ import com.example.restapp.GestorFinanciero.service.IMetaService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -34,7 +35,6 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
 
     @Override
     public Meta crearMetaDTO(CrearMetaDTO dto) {
-
         Meta meta = new Meta();
         meta.setNombre(dto.getNombre());
         meta.setMontoActual(0.0);
@@ -45,9 +45,10 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
         LocalDate hoy = LocalDate.now();
         FechaMeta fechaMeta = new FechaMeta();
         fechaMeta.setDia(hoy.getDayOfMonth());
-        fechaMeta.setMes(hoy.getMonthValue());
+        fechaMeta.setMes(hoy.getMonthValue());  
         fechaMeta.setAnio(hoy.getYear());
         fechaMeta.setFechaTotal(hoy);
+
         fechaMeta.setMeta(meta);
         meta.setFechaMeta(fechaMeta);
 
@@ -55,19 +56,31 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
                 .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
         meta.setUsuarioMetas(usuario);
 
-        if (dto.getNombreCategoria() != null) {
+        if (dto.getNombreCategoria() != null && !dto.getNombreCategoria().isBlank()) {
             CategoriaMeta categoria = categoriaMetaRepo
                     .findByNombre(dto.getNombreCategoria())
                     .orElseThrow(() -> new ModelNotFoundException("Categoría meta no encontrada"));
             meta.setCategoriaMetas(categoria);
+        } else {
+            meta.setCategoriaMetas(null); 
         }
 
-        if (dto.getNombreMisCategoria() != null) {
+        if (dto.getNombreMisCategoria() != null && !dto.getNombreMisCategoria().isBlank()) {
+
             MisCategoriasMetas misCategoria = misCategoriasMetaRepo
-                    .findByNombre(dto.getNombreMisCategoria())
-                    .orElseThrow(() -> new ModelNotFoundException("Mi categoría meta no encontrada"));
+                    .findByNombreAndUsuario_Id(dto.getNombreMisCategoria(), usuario.getId())
+                    .orElseThrow(() -> new ModelNotFoundException("Mi categoría meta no encontrada para este usuario"));
+
             meta.setMisCategoriaMeta(misCategoria);
+        }else {
+            meta.setMisCategoriaMeta(null); 
         }
+
+
+        if (meta.getCategoriaMetas() == null && meta.getMisCategoriaMeta() == null) {
+            throw new IllegalArgumentException("Debe seleccionar al menos una categoría (principal o personalizada)");
+        }
+        
 
         TipoMeta tipoMeta = tipoMetaRepo.findByNombreTipoMeta(dto.getNombreTipoMeta())
                 .orElseThrow(() -> new ModelNotFoundException("Tipo de meta no encontrado"));
@@ -88,6 +101,7 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
 
         return meta;
     }
+
 
     @Override
     public List<Meta> listarMetasPorUsuario(Integer idUsuario) {
@@ -171,6 +185,56 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
         return repo.findByMetaId(idMeta);
     }
 
+    @Override
+    @Transactional
+    public Meta editarMeta(Integer idMeta, Integer idUsuario, EditarMetaDTO dto) {
+
+        Meta meta = repo.findById(idMeta)
+                .orElseThrow(() -> new ModelNotFoundException("Meta no encontrada"));
+
+        if (!meta.getUsuarioMetas().getId().equals(idUsuario)) {
+            throw new IllegalArgumentException("No tiene permiso para editar esta meta");
+        }
+
+        if (dto.getNombre() != null && !dto.getNombre().isBlank()) {
+            meta.setNombre(dto.getNombre());
+        }
+
+        if (dto.getFechaFinal() != null) {
+            if (dto.getFechaFinal().isBefore(meta.getFechaInicial())) {
+                throw new IllegalArgumentException("La fecha final no puede ser anterior a la fecha inicial");
+            }
+            meta.setFechaFinal(dto.getFechaFinal());
+        }
+
+        if (dto.getMontoObjetivo() != null) {
+            if (dto.getMontoObjetivo() <= 0) {
+                throw new IllegalArgumentException("El monto objetivo debe ser mayor que cero");
+            }
+
+            if (dto.getMontoObjetivo() < meta.getMontoActual()) {
+                throw new IllegalArgumentException("El monto objetivo no puede ser menor al monto actual ahorrado");
+            }
+
+            meta.setMontoObjetivo(dto.getMontoObjetivo());
+        }
+
+        return repo.save(meta);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarMeta(Integer idMeta, Integer idUsuario) {
+
+        Meta meta = repo.findById(idMeta)
+                .orElseThrow(() -> new ModelNotFoundException("Meta no encontrada"));
+
+        if (!meta.getUsuarioMetas().getId().equals(idUsuario)) {
+            throw new IllegalArgumentException("No tiene permiso para eliminar esta meta");
+        }
+
+        repo.delete(meta);
+    }
 
 
 }
