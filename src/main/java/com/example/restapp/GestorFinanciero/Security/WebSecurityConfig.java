@@ -81,13 +81,9 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/usuarios/asignarNivel").authenticated()
                         .requestMatchers(HttpMethod.GET, "/usuarios/usuario/nivel").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority(ADMIN)
-                        
-
-                       
 
                         .requestMatchers(HttpMethod.POST, "/presupuestos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/presupuestos/mis-presupuestos").hasAuthority(USUARIO)
-
 
                         .requestMatchers(HttpMethod.POST, "/reportes/crear-reporte").hasAuthority(USUARIO)
 
@@ -96,7 +92,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/transacciones/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.DELETE, "/transacciones/transacciones/{id}").hasAuthority(USUARIO)
                         
-
                         .requestMatchers(HttpMethod.GET, "/metas/transacciones/meta/{idMeta}").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.POST, "/metas/*/metas/**").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.GET, "/metas/**").hasAuthority(USUARIO)
@@ -106,8 +101,10 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/categorias/metas/").authenticated()
                         .requestMatchers(HttpMethod.GET, "/categorias/tipo-metas/").authenticated()
                         .requestMatchers(HttpMethod.GET, "/categorias/estado-metas/").authenticated()
-                        
 
+                        .requestMatchers(HttpMethod.GET, "/mis-metas").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.POST, "/mis-metas").hasAuthority(USUARIO)
+                        
                         .requestMatchers(HttpMethod.GET, "/niveles/**").authenticated()
                         
                         .requestMatchers(HttpMethod.GET, "/trofeos/mi-lista-trofeos").hasAuthority(USUARIO)
