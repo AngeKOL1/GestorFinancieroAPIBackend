@@ -1,5 +1,6 @@
 package com.example.restapp.GestorFinanciero.service;
 
+import com.example.restapp.GestorFinanciero.dto.NivelUsuarioInfoDTO;
 import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.models.Usuario;
 
@@ -10,4 +11,5 @@ public interface IUsuarioService extends IGenericService<Usuario, Integer>{
     void asignarTrofeo (Usuario user, Integer idTrofeo);
     boolean verificarMetasEnCategoriasDiferentes(Integer idUsuario);
     boolean usuarioTieneTrofeo(Usuario user, Integer idTrofeo);
+    NivelUsuarioInfoDTO obtenerInfoNivel(Integer idUsuario);
 }

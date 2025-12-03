@@ -1,5 +1,6 @@
 package com.example.restapp.GestorFinanciero.controller;
 
+import com.example.restapp.GestorFinanciero.dto.NivelUsuarioInfoDTO;
 import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.models.Usuario;
 import com.example.restapp.GestorFinanciero.service.IUsuarioService;
@@ -47,4 +48,14 @@ public class UsuarioController {
         Integer authenticatedUserId = (Integer) request.getAttribute("authenticatedUserId");
         return ResponseEntity.ok(service.obtenerXPUsuario(authenticatedUserId));
     }
+    @GetMapping("/usuario/nivel")
+    public ResponseEntity<NivelUsuarioInfoDTO> obtenerNivelUsuario(HttpServletRequest request) {
+
+        Integer userId = (Integer) request.getAttribute("authenticatedUserId");
+
+        NivelUsuarioInfoDTO dto = service.obtenerInfoNivel(userId);
+
+        return ResponseEntity.ok(dto);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.restapp.GestorFinanciero.service.impl;
 
+import com.example.restapp.GestorFinanciero.dto.NivelUsuarioInfoDTO;
 import com.example.restapp.GestorFinanciero.dto.UsuarioRegistroDTO;
 import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 import com.example.restapp.GestorFinanciero.models.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -201,4 +203,58 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         return user.getUsuarioTrofeo().stream()
                 .anyMatch(t -> t.getTrofeo().getIdTrofeo().equals(idTrofeo));
     }
+
+    @Override
+    public NivelUsuarioInfoDTO obtenerInfoNivel(Integer idUsuario) {
+
+        Usuario usuario = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
+
+        Integer xpUsuario = usuario.getXp();
+
+        NivelUsuario nivelActual = nivelUsuarioRepo
+                .findTopByXpTotalLessThanEqualOrderByXpTotalDesc(xpUsuario)
+                .orElseThrow(() -> new ModelNotFoundException("No se encontró un nivel para ese XP"));
+
+        Optional<NivelUsuario> optSiguiente = nivelUsuarioRepo
+                .findFirstByXpTotalGreaterThanOrderByXpTotalAsc(xpUsuario);
+
+        NivelUsuarioInfoDTO dto = new NivelUsuarioInfoDTO();
+
+        dto.setNivelActual(nivelActual.getNivelActual());
+        dto.setXpActual(xpUsuario);
+        dto.setBanner(nivelActual.getBanner());
+
+        if (optSiguiente.isEmpty()) {
+            dto.setXpNecesaria(nivelActual.getXpTotal());
+            dto.setXpRestante(0);
+            dto.setPorcentaje(100);
+            return dto;
+        }
+
+        NivelUsuario nivelSiguiente = optSiguiente.get();
+
+        int xpNecesariaAbsoluta = nivelSiguiente.getXpTotal();
+        dto.setXpNecesaria(xpNecesariaAbsoluta);
+
+        int xpRestanteAbsoluta = xpNecesariaAbsoluta - xpUsuario;
+        dto.setXpRestante(Math.max(xpRestanteAbsoluta, 0));
+
+        int xpBaseNivelActual = nivelActual.getXpTotal();           
+        int xpEnEsteNivel = xpUsuario - xpBaseNivelActual;          
+        int xpRangoNivel = nivelSiguiente.getXpTotal() - xpBaseNivelActual;
+
+        int porcentaje = 0;
+        if (xpRangoNivel > 0) {
+            porcentaje = (int) ( (xpEnEsteNivel * 100.0) / xpRangoNivel );
+        }
+
+        porcentaje = Math.max(0, Math.min(100, porcentaje));
+
+        dto.setPorcentaje(porcentaje);
+
+        return dto;
+    }
+
+
 }

@@ -79,7 +79,11 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/usuarios/registro").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuarios/xp").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/usuarios/asignarNivel").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/usuarios/usuario/nivel").hasAuthority(USUARIO)
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAuthority(ADMIN)
+                        
+
+                       
 
                         .requestMatchers(HttpMethod.POST, "/presupuestos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/presupuestos/mis-presupuestos").hasAuthority(USUARIO)
@@ -100,8 +104,12 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/meta/misMetas/").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/niveles/**").authenticated()
+                        
+                        .requestMatchers(HttpMethod.GET, "/trofeos/mi-lista-trofeos").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.GET, "/trofeos/usuario/ultimo-trofeo").hasAuthority(USUARIO)
+                        .requestMatchers(HttpMethod.GET, "/trofeos/**").hasAuthority(ADMIN)
 
-                        .requestMatchers(HttpMethod.GET, "/trofeos/**").authenticated()
+
                         .requestMatchers("/usuarios/**").authenticated()
                         .anyRequest().authenticated()
                 )
