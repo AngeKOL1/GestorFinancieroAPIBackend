@@ -99,7 +99,7 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
         usuario.setApellido(dto.getApellido());
         usuario.setFechaRegistro(LocalDate.now());
         usuario.setUltConexion(LocalDate.now());
-
+        usuario.setXp(0);
         String passwordEncriptada = passwordEncoder.encode(dto.getContrasena());
         usuario.setContrasena(passwordEncriptada);
 

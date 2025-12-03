@@ -103,6 +103,11 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/meta/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/meta/misMetas/").authenticated()
 
+                        .requestMatchers(HttpMethod.GET, "/categorias/metas/").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/categorias/tipo-metas/").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/categorias/estado-metas/").authenticated()
+                        
+
                         .requestMatchers(HttpMethod.GET, "/niveles/**").authenticated()
                         
                         .requestMatchers(HttpMethod.GET, "/trofeos/mi-lista-trofeos").hasAuthority(USUARIO)

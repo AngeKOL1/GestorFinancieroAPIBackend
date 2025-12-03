@@ -34,6 +34,7 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
 
     @Override
     public Meta crearMetaDTO(CrearMetaDTO dto) {
+
         Meta meta = new Meta();
         meta.setNombre(dto.getNombre());
         meta.setMontoActual(0.0);
@@ -46,44 +47,48 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
         fechaMeta.setDia(hoy.getDayOfMonth());
         fechaMeta.setMes(hoy.getMonthValue());
         fechaMeta.setAnio(hoy.getYear());
-        fechaMeta.setFechaTotal(LocalDate.now());
-
+        fechaMeta.setFechaTotal(hoy);
         fechaMeta.setMeta(meta);
         meta.setFechaMeta(fechaMeta);
-
 
         Usuario usuario = usuarioRepo.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
         meta.setUsuarioMetas(usuario);
 
-        if (dto.getIdCategoria() != null) {
-            CategoriaMeta categoria = categoriaMetaRepo.findById(dto.getIdCategoria())
+        if (dto.getNombreCategoria() != null) {
+            CategoriaMeta categoria = categoriaMetaRepo
+                    .findByNombre(dto.getNombreCategoria())
                     .orElseThrow(() -> new ModelNotFoundException("Categoría meta no encontrada"));
             meta.setCategoriaMetas(categoria);
-        } else if (dto.getIdMisCategoria() != null) {
-            MisCategoriasMetas miscategoria = misCategoriasMetaRepo.findById(dto.getIdMisCategoria())
-                    .orElseThrow(() -> new ModelNotFoundException("Mis categoría meta no encontrada"));
-            meta.setMisCategoriaMeta(miscategoria);
         }
 
+        if (dto.getNombreMisCategoria() != null) {
+            MisCategoriasMetas misCategoria = misCategoriasMetaRepo
+                    .findByNombre(dto.getNombreMisCategoria())
+                    .orElseThrow(() -> new ModelNotFoundException("Mi categoría meta no encontrada"));
+            meta.setMisCategoriaMeta(misCategoria);
+        }
 
-        TipoMeta tipoMeta = tipoMetaRepo.findById(dto.getIdMeta())
+        TipoMeta tipoMeta = tipoMetaRepo.findByNombreTipoMeta(dto.getNombreTipoMeta())
                 .orElseThrow(() -> new ModelNotFoundException("Tipo de meta no encontrado"));
         meta.setTipoMeta(tipoMeta);
 
-        EstadoMeta estado = estadoMetaRepo.findById(dto.getIdEstadoMeta())
+        EstadoMeta estado = estadoMetaRepo.findByNombreEstadoMeta(dto.getNombreEstadoMeta())
                 .orElseThrow(() -> new ModelNotFoundException("Estado meta no encontrado"));
         meta.setEstadoMeta(estado);
 
-        meta.setMetaTransaccion(new HashSet<>()); 
-        meta.setPresupuesto(null); 
+        meta.setMetaTransaccion(new HashSet<>());
+        meta.setPresupuesto(null);
 
         asignarXpPorMeta(dto.getIdUsuario());
 
         repo.save(meta);
+
         usuarioService.verificarMetasEnCategoriasDiferentes(usuario.getId());
-        return meta ;
+
+        return meta;
     }
+
     @Override
     public List<Meta> listarMetasPorUsuario(Integer idUsuario) {
         return repo.findByUsuarioMetas_Id(idUsuario);
