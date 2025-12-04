@@ -66,6 +66,7 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
                 .orElseThrow(() -> new ModelNotFoundException("Tipo de transacción no encontrado"));
         transaccion.setTipoTransaccion(tipoTransaccion);
 
+        Integer tipo = dto.getTipoTransaccionId();
 
         Meta meta = null;
 
@@ -78,7 +79,14 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
                 throw new IllegalArgumentException("La meta no pertenece al usuario");
             }
 
-            meta.setMontoActual(meta.getMontoActual() + dto.getMonto());
+            if (tipo == 2) { 
+                meta.setMontoActual(meta.getMontoActual() + dto.getMonto());
+            } else if (tipo == 1) { 
+                if (meta.getMontoActual() - dto.getMonto() < 0) {
+                    throw new IllegalArgumentException("No puedes gastar más de lo ahorrado en la meta");
+                }
+                meta.setMontoActual(meta.getMontoActual() - dto.getMonto());
+            }
 
             MetaTransaccion metaTransaccion = new MetaTransaccion();
             metaTransaccion.setMeta(meta);
@@ -102,18 +110,10 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
             transaccion.setPresupuesto(presupuesto);
             presupuesto.getTransacciones().add(transaccion);
 
-
-            Integer tipo = dto.getTipoTransaccionId();
-
-            if (tipo == 1) {
+            if (tipo == 1) { 
                 presupuesto.setMontoActual(
                         presupuesto.getMontoActual() + dto.getMonto()
                 );
-
-            } else if (tipo == 2) {
-                // INGRESO → NO afecta el presupuesto (RECOMENDADO)
-                // Si quisieras modificar capacidad, sería:
-                // presupuesto.setMontoEstablecido(presupuesto.getMontoEstablecido() + dto.getMonto());
             }
         }
 
@@ -125,9 +125,7 @@ public class TransaccionService extends GenericService<Transaccion, Integer> imp
         }
 
         if (presupuesto != null) {
-
             presupuestoService.evaluarEstadoPresupuesto(presupuesto);
-
             presupuestoService.verificarPresupuestosCompletados(usuario.getId());
         }
 
