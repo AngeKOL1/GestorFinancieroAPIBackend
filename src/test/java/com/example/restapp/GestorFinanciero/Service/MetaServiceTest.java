@@ -5,7 +5,6 @@ import com.example.restapp.GestorFinanciero.dto.EditarMetaDTO;
 import com.example.restapp.GestorFinanciero.exception.ModelNotFoundException;
 import com.example.restapp.GestorFinanciero.models.*;
 import com.example.restapp.GestorFinanciero.repo.*;
-import com.example.restapp.GestorFinanciero.service.IMetaService;
 import com.example.restapp.GestorFinanciero.service.impl.MetaService;
 import com.example.restapp.GestorFinanciero.service.impl.UsuarioService;
 
