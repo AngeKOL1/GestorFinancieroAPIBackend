@@ -33,6 +33,11 @@
 		<sonar.organization>angekol1</sonar.organization>
     </properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- Spring Web -->
 		<dependency>

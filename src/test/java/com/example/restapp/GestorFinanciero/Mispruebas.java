@@ -20,7 +20,7 @@ public class Mispruebas {
     }
     @Test
     public void prueba1() {
-        driver.get("http://miapp-frontend-bucket.s3-website-us-east-1.amazonaws.com/");
+        driver.get("http://localhost:5173/");
         System.out.println(driver.getTitle());
     }
 

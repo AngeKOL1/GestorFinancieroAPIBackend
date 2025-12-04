@@ -30,8 +30,8 @@ public class UsuarioService extends GenericService<Usuario, Integer> implements 
     private final UsuarioTrofeoRepo usuarioTrofeoRepo;
     private final MetaRepo metaRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     protected IGenericRepo<Usuario, Integer> getRepo() {

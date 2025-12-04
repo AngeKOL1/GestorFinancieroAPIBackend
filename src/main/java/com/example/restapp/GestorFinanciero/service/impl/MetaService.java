@@ -114,21 +114,34 @@ public class MetaService extends GenericService<Meta, Integer> implements IMetaS
         Usuario usuario = usuarioRepo.findById(idUsuario)
                 .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
 
-        return usuario.getMetas().isEmpty() ? 0 : 1;
+        // CORRECCIÓN: si no tiene metas, sí es primera meta
+        return usuario.getMetas().isEmpty() ? 1 : 0;
     }
+
 
     @Override
     public Integer asignarXpPorMeta(Integer idUsuario){
+
         Usuario usuario = usuarioRepo.findById(idUsuario)
                 .orElseThrow(() -> new ModelNotFoundException("Usuario no encontrado"));
-        if (primeraMeta(idUsuario) == 1){
-            usuario.setXp(usuario.getXp()+100);
+
+        if (usuario.getXp() == null) {
+            usuario.setXp(0); // ← PREVENCIÓN DE NULOS
+        }
+
+        boolean esPrimeraMeta = usuario.getMetas().isEmpty();
+
+        if (esPrimeraMeta) {
+            usuario.setXp(usuario.getXp() + 100);
             usuarioService.asignarNiveles(idUsuario);
             return 100;
         }
+
         usuarioService.asignarTrofeo(usuario, 2);
+        usuario.setXp(usuario.getXp() + 250);
         return 250;
     }
+
 
    @Override
     public void validarCumplimientoDeMeta(Meta meta) {
